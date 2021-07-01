@@ -31,7 +31,7 @@ function transformDate(date){
     return(new Intl.DateTimeFormat('en-US', { year: 'numeric', month: 'short', day: '2-digit'}).format(new Date(Date.parse(date))));
 }
 
-function RenderComments({comments}){
+function RenderComments({comments, addComment, dishId}){
     if(comments){
         const commentList = comments.map((comment) => {
             return (
@@ -45,7 +45,7 @@ function RenderComments({comments}){
             <div>
                 <h4>Comments</h4>
                 <div>{commentList}</div>
-                <CommentForm/>
+                <CommentForm addComment={addComment} dishId={dishId}/>
             </div>
         )
     }else{
@@ -60,7 +60,7 @@ class  CommentForm extends Component{
     constructor(props) {
         super(props);
         this.toggleModal = this.toggleModal.bind(this);
-        this.handleCommentForm = this.handleCommentForm.bind(this);
+        this.handleSubmit = this.handleSubmit.bind(this);
         this.state = {
             isNavOpen: false,
             isModalOpen: false
@@ -73,8 +73,9 @@ class  CommentForm extends Component{
         });
     }
 
-    handleCommentForm(event){
-        this.toggleModal()
+    handleSubmit(values){
+        this.toggleModal();
+        this.props.addComment(this.props.dishId, values.rating, values.author, values.comment)
     }
 
     render(){
@@ -85,7 +86,7 @@ class  CommentForm extends Component{
                 <Modal isOpen={this.state.isModalOpen} toggle={this.toggleModal}>
                     <ModalHeader>Submit Comment</ModalHeader>
                     <ModalBody>
-                        <LocalForm onSubmit={this.handleCommentForm}>
+                        <LocalForm onSubmit={(values) => this.handleSubmit(values)}>
                             <Row className="form-group">
                                 <Label htmlFor="rating" md={2}>Rating</Label>
                                 <Col md={12}>
@@ -155,7 +156,10 @@ const DishDetail = (props) => {
                         <RenderDish dish={dish}/>
                     </div>
                     <div className="col-12 col-md-5 m-1">
-                        <RenderComments comments={props.comments}/>
+                        <RenderComments comments={props.comments}
+                            addComment={props.addComment}
+                            dishId={props.dish.id}
+                        />
                     </div>
                 </div>
             </div>
