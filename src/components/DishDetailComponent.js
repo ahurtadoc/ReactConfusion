@@ -12,6 +12,7 @@ import {
 } from "reactstrap";
 import {Control, LocalForm, Errors} from "react-redux-form";
 import {Link} from "react-router-dom";
+import {Loading} from "./LoadingComponent";
 
 
 function RenderDish({dish}) {
@@ -135,9 +136,24 @@ class  CommentForm extends Component{
 }
 
 const DishDetail = (props) => {
-    const dish = props.dish;
-
-    if (dish){
+    if( props.isLoading){
+        return (
+            <div className="container">
+                <div className="row">
+                    <Loading/>
+                </div>
+            </div>
+        );
+    }else if(props.errMess){
+        return (
+            <div className="container">
+                <div className="row">
+                    <h4>{props.errMess}</h4>
+                </div>
+            </div>
+        )
+    }else if (props.dish){
+        const dish = props.dish;
         return (
             <div className="container">
                 <div className="row">
@@ -158,7 +174,7 @@ const DishDetail = (props) => {
                     <div className="col-12 col-md-5 m-1">
                         <RenderComments comments={props.comments}
                             addComment={props.addComment}
-                            dishId={props.dish.id}
+                            dishId={dish.id}
                         />
                     </div>
                 </div>
